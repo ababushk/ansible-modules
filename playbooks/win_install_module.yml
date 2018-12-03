@@ -1,0 +1,29 @@
+---
+
+- hosts: windows
+  vars:
+    module_name: numpy
+  tasks:
+    - name: Clean-up previous module installations
+      win_command: "pip uninstall {{ module_name }}"
+      args:
+        stdin: "y"
+      ignore_errors: true
+
+    - name: Install module (check mode)
+      win_pip:
+        name: "{{ module_name }}"
+        state: present
+      register: pip_install_check
+      check_mode: yes
+
+    - name: Check if module wasn't actually installed
+      win_command: "pip show {{ module_name }}"
+      register: install_actuall_check
+      ignore_errors: true
+
+    - name: Assert install a module (check mode)
+      assert:
+        that:
+          - pip_install_check is changed
+          - install_actuall_check.rc != 0
