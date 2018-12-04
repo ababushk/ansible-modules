@@ -27,3 +27,31 @@
         that:
           - pip_install_check is changed
           - install_actuall_check.rc != 0
+
+
+    - name: Install module
+      win_pip:
+        name: "{{ module_name }}"
+        state: present
+      register: pip_install
+
+    - name: Check if module was installed
+      win_command: "pip show {{ module_name }}"
+      register: install_actual
+
+    - name: Assert module installed
+      assert:
+        that:
+          - pip_install is changed
+          - install_actual.rc == 0
+
+    - name: Install module (idempotent)
+      win_pip:
+        name: "{{ module_name }}"
+        state: present
+      register: pip_install_again
+
+    - name: Assert module installed (idempotent)
+      assert:
+        that:
+          - not pip_install_again is changed

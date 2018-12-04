@@ -30,13 +30,15 @@ Function Is-Installed {
 
     $res = Run-Command -command "$pip show $name"
     if ($res.rc -eq 0) {
-        installed = $true
+        $installed = $true
     }
 
     return $installed
 }
 
+Function Create-Virtualenv {
 
+}
 # check if pip is available
 $res = Run-Command -command "$pip --version"
 
